@@ -1,38 +1,58 @@
-# cli_tool.py
+#!/usr/bin/env python3
+
+# Author: Hunter Steele
+# Date: 12/9/2025
+# Version:1.1
 
 import argparse
 from models import Task, User
 
-# Global dictionary to store users and their tasks
+# Global dictionary to store users
 users = {}
 
-# TODO: Implement function to add a task for a user
 def add_task(args):
-    # - Check if the user exists, if not, create one
-    # - Create a new Task with the given title
-    # - Add the task to the user's task list
-    pass
+    """Add a new task for the given user."""
+    username = args.user
+    title = args.title
 
-# TODO: Implement function to mark a task as complete
+    # Create user if missing
+    if username not in users:
+        users[username] = User(username)
+
+    user = users[username]
+    task = Task(title)
+    user.add_task(task)
+
 def complete_task(args):
-    # - Look up the user by name
-    # - Look up the task by title
-    # - Mark the task as complete
-    # - Print appropriate error messages if not found
-    pass
+    """Mark a user's task as complete."""
+    username = args.user
+    title = args.title
 
-# CLI entry point
+    # Check if user exists
+    if username not in users:
+        print("⚠️ User not found.")
+        return
+
+    user = users[username]
+    task = user.get_task_by_title(title)
+
+    if task is None:
+        print("❌ Task not found.")
+        return
+
+    task.complete()
+
 def main():
     parser = argparse.ArgumentParser(description="Task Manager CLI")
     subparsers = parser.add_subparsers()
 
-    # Subparser for adding tasks
+    # Add task command
     add_parser = subparsers.add_parser("add-task", help="Add a task for a user")
     add_parser.add_argument("user")
     add_parser.add_argument("title")
     add_parser.set_defaults(func=add_task)
 
-    # Subparser for completing tasks
+    # Complete task command
     complete_parser = subparsers.add_parser("complete-task", help="Complete a user's task")
     complete_parser.add_argument("user")
     complete_parser.add_argument("title")
